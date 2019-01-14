@@ -13,6 +13,9 @@
 		507174A221EC88F3005810B4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 507174A121EC88F3005810B4 /* Assets.xcassets */; };
 		507174A521EC88F3005810B4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 507174A321EC88F3005810B4 /* LaunchScreen.storyboard */; };
 		507174A821EC88F3005810B4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 507174A721EC88F3005810B4 /* main.m */; };
+		507174C121ECD724005810B4 /* WHQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 507174BB21ECD724005810B4 /* WHQuery.m */; };
+		507174C221ECD724005810B4 /* WHDBManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 507174BC21ECD724005810B4 /* WHDBManager.m */; };
+		507174C321ECD724005810B4 /* WHObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 507174BF21ECD724005810B4 /* WHObject.m */; };
 		DC64456A4DD20CF6950223D1 /* libPods-WHDBDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CBDD79B7AD58AE98F14D54C8 /* libPods-WHDBDemo.a */; };
 /* End PBXBuildFile section */
 
@@ -28,6 +31,13 @@
 		507174A421EC88F3005810B4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		507174A621EC88F3005810B4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		507174A721EC88F3005810B4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		507174BA21ECD724005810B4 /* WHDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WHDB.h; sourceTree = "<group>"; };
+		507174BB21ECD724005810B4 /* WHQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WHQuery.m; sourceTree = "<group>"; };
+		507174BC21ECD724005810B4 /* WHDBManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WHDBManager.m; sourceTree = "<group>"; };
+		507174BD21ECD724005810B4 /* WHObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WHObject.h; sourceTree = "<group>"; };
+		507174BE21ECD724005810B4 /* WHQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WHQuery.h; sourceTree = "<group>"; };
+		507174BF21ECD724005810B4 /* WHObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WHObject.m; sourceTree = "<group>"; };
+		507174C021ECD724005810B4 /* WHDBManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WHDBManager.h; sourceTree = "<group>"; };
 		CBDD79B7AD58AE98F14D54C8 /* libPods-WHDBDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-WHDBDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5C13B332C9555B436348419 /* Pods-WHDBDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WHDBDemo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-WHDBDemo/Pods-WHDBDemo.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -82,6 +92,7 @@
 		5071749721EC88F3005810B4 /* WHDBDemo */ = {
 			isa = PBXGroup;
 			children = (
+				507174B921ECD724005810B4 /* WHDB */,
 				5071749821EC88F3005810B4 /* AppDelegate.h */,
 				5071749921EC88F3005810B4 /* AppDelegate.m */,
 				5071749B21EC88F3005810B4 /* ViewController.h */,
@@ -93,6 +104,21 @@
 				507174A721EC88F3005810B4 /* main.m */,
 			);
 			path = WHDBDemo;
+			sourceTree = "<group>";
+		};
+		507174B921ECD724005810B4 /* WHDB */ = {
+			isa = PBXGroup;
+			children = (
+				507174BA21ECD724005810B4 /* WHDB.h */,
+				507174BD21ECD724005810B4 /* WHObject.h */,
+				507174BF21ECD724005810B4 /* WHObject.m */,
+				507174BE21ECD724005810B4 /* WHQuery.h */,
+				507174BB21ECD724005810B4 /* WHQuery.m */,
+				507174C021ECD724005810B4 /* WHDBManager.h */,
+				507174BC21ECD724005810B4 /* WHDBManager.m */,
+			);
+			name = WHDB;
+			path = ../../WHDB;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -189,6 +215,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				5071749D21EC88F3005810B4 /* ViewController.m in Sources */,
+				507174C321ECD724005810B4 /* WHObject.m in Sources */,
+				507174C221ECD724005810B4 /* WHDBManager.m in Sources */,
+				507174C121ECD724005810B4 /* WHQuery.m in Sources */,
 				507174A821EC88F3005810B4 /* main.m in Sources */,
 				5071749A21EC88F3005810B4 /* AppDelegate.m in Sources */,
 			);

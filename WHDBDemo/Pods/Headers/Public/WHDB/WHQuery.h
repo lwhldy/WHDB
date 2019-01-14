@@ -1,1 +1,0 @@
-../../../WHDB/WHDB/WHQuery.h

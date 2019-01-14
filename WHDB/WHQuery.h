@@ -219,37 +219,94 @@ typedef void(^WHObjectResultBlock)(WHObject *object, NSError *error);
 
 #pragma mark -  Find methods
 
-- (NSArray *)findObjects;
+/**
+ 找到符合条件的对象
 
-- (NSArray *)findObjects:(NSError **)error;
+ @return WHObject 数组
+ */
+- (NSArray<WHObject*> *)findObjects;
+
+/**
+ 找到符合条件的对象
+ @param error 如果出错将被赋值
+ @return WHObject 数组
+ */
+- (NSArray<WHObject*> *)findObjects:(NSError **)error;
 
 //- (void)findObjectsInBackgroundWithBlock:(WHArrayResultBlock)block;
 
 
 #pragma mark -  Get methods
-
+/**
+ 通过tableName和primaryId 得到 WHObject对象
+ 只有当WHDBManager的属性 defaultKeysEnable为YES时才生效
+ @param tableName 表名
+ @param primaryId 主键id
+ @return WHObject 数组
+ */
 + (WHObject *)getObjectWithTableName:(NSString*)tableName
                            primaryId:(NSNumber*)primaryId;
-
+/**
+ 通过tableName和primaryId 得到 WHObject对象
+ 只有当WHDBManager的属性 defaultKeysEnable为YES时才生效
+ @param tableName 表名
+ @param primaryId 主键id
+ @param error 如果出错将被赋值
+ @return WHObject 数组
+ */
 + (WHObject *)getObjectWithTableName:(NSString*)tableName
                            primaryId:(NSNumber*)primaryId
                                error:(NSError **)error;
-
+/**
+ 通过 primaryId 得到 WHObject对象
+ 只有当WHDBManager的属性 defaultKeysEnable为YES时才生效
+ @param primaryId 主键id
+ @return WHObject 数组
+ */
 - (WHObject *)getObjectWithPrimaryId:(NSNumber*)primaryId;
 
+/**
+ 通过 primaryId 得到 WHObject对象
+ 只有当WHDBManager的属性 defaultKeysEnable为YES时才生效
+ @param primaryId 主键id
+ @param error 如果出错将被赋值
+ @return WHObject 数组
+ */
 - (WHObject *)getObjectWithPrimaryId:(NSNumber*)primaryId
                                error:(NSError **)error;
 
 #pragma mark -  Delete methods
 
+/**
+ 删除符合条件的对象
+
+ @return YES OR NO
+ */
 - (BOOL)deleteAll;
 
+/**
+ 删除符合条件的对象
+ 
+ @param error 如果出错将被赋值
+ @return YES OR NO
+ */
 - (BOOL)deleteAll:(NSError **)error;
 
 #pragma mark -  Count methods
 
+/**
+ 查询符合条件的对象数量
+
+ @return 数量
+ */
 - (NSInteger)countObjects;
 
+/**
+ 查询符合条件的对象数量
+ 
+ @param error 如果出错将被赋值
+ @return 数量
+ */
 - (NSInteger)countObjects:(NSError **)error;
 
 #pragma mark - Or Query methods (或查询)

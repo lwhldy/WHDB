@@ -107,7 +107,7 @@
         [initDic addEntriesFromDictionary:keyTypes];
     }
     if (self.defaultKeysEnable) {
-        [sql appendString:@" (primaryId NTEGER PRIMARY KEY AUTOINCREMENT"];
+        [sql appendString:@" (primaryId INTEGER PRIMARY KEY AUTOINCREMENT"];
         for (NSString *key in [WHObject invalidKeys]) {
             if ([key isEqualToString:@"createdAt"]) {
                 [initDic setObject:WHDB_VALUETYPE_DATE forKey:key];
@@ -316,7 +316,7 @@
             [objDic setObject:[NSNull null] forKey:@"primaryId"];
             [objDic setObject:[NSDate date] forKey:@"updatedAt"];
         }
-        
+        NSMutableArray *arguments = [NSMutableArray array];
         if (keys.count == 1) {
             [sql appendString:[NSString stringWithFormat:@" (%@) VALUES (?)", keys.firstObject]];
         }else {
@@ -324,6 +324,8 @@
             NSMutableString *valuesString = [NSMutableString string];
             for (NSInteger i = 0; i < keys.count; i++) {
                 NSString *key = keys[i];
+                id value = [objDic objectForKey:key];
+                [arguments addObject:value];
                 if (i == 0) {
                     [keysString appendString:[NSString stringWithFormat:@" (%@,", key]];
                     [valuesString appendString:@" (?,"];
@@ -337,7 +339,7 @@
             }
             [sql appendFormat:@"%@ VALUES %@", keysString, valuesString];
         }
-        [self.db executeUpdate:sql withParameterDictionary:objDic];
+        [self.db executeUpdate:sql withArgumentsInArray:arguments];
     }
     success = [self.db commit];
     if (!success) {
