@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
 
   s.name         = "WHDB"
   s.version      = "0.0.1"
-  s.summary      = "基于FMDB的二次封装库，实现了大多数基础的sqlite数据库操作，使用简单，不会sqlite语句也可以轻松实现本地数据存储"
+  s.summary      = "基于FMDB的二次封装库"
 
   # This description is used to generate tags and improve search results.
   #   * Think: What does it do? Why did you write it? What is the focus?
@@ -25,6 +25,7 @@ Pod::Spec.new do |s|
   #   * Write the description between the DESC delimiters below.
   #   * Finally, don't worry about the indent, CocoaPods strips it!
   s.description  = <<-DESC
+  基于FMDB的二次封装库，实现了大多数基础的sqlite数据库操作，使用简单，不会sqlite语句也可以轻松实现本地数据存储
                    DESC
 
   s.homepage     = "hthttps://github.com/lwhldy/WHDB"
@@ -63,8 +64,8 @@ Pod::Spec.new do |s|
   #  the deployment target. You can optionally include the target after the platform.
   #
 
-  # s.platform     = :ios
-  # s.platform     = :ios, "5.0"
+  s.platform     = :ios
+  s.platform     = :ios, "8.0"
 
   #  When using multiple platforms
   # s.ios.deployment_target = "5.0"
@@ -79,7 +80,7 @@ Pod::Spec.new do |s|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  s.source       = { :git => "http://EXAMPLE/WHDB.git", :tag => "#{s.version}" }
+  s.source       = { :git => "https://github.com/lwhldy/WHDB.git", :tag => "#{s.version}" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
