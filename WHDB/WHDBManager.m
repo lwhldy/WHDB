@@ -2,8 +2,8 @@
 //  FMDBManager.m
 //  DriveLicense
 //
-//  Created by 林文华 on 2018/12/26.
-//  Copyright © 2018年 Best Lin. All rights reserved.
+//  Created by lwhldy on 2018/12/26.
+//  Copyright © 2018年 lwhldy. All rights reserved.
 //
 
 #import "WHDBManager.h"

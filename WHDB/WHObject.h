@@ -2,7 +2,7 @@
 //  WHObject.h
 //  WHDBManager
 //
-//  Created by 林文华 on 2019/1/4.
+//  Created by lwhldy on 2019/1/4.
 //  Copyright © 2019年 lwhldy. All rights reserved.
 //
 
