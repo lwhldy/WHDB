@@ -396,7 +396,7 @@ static NSString *const WHDB_VALUETYPE_NUMERIC = @"NUMERIC";
  @return  返回字典数组 或 nil
  */
 - (NSArray*)queryRelationForCondition:(NSArray*)condition
-                      relateCondition:(NSArray *)relateCondition
+                      relateCondition:(NSArray*)relateCondition
                             orderKeys:(NSArray*)orderKeys
                               inTable:(NSString*)tableName
                           relateTable:(NSString*)relateTableName;

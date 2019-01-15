@@ -7,7 +7,7 @@
 //
 
 #import "ViewController.h"
-#import <WHDB.h>
+#import "WHDB.h"
 
 @interface ViewController ()
 
@@ -26,8 +26,17 @@
         //根据名称创建数据库文件
         [[WHDBManager shareManager] createDBFileAndHoldWithDBName:@"Test" error:&error];
     }else {
-        //也建立已经存在的数据库文件连接
+        //也可以建立已经存在的数据库文件连接
         [[WHDBManager shareManager] createExistingDBConnectionAndHoldWithPath:path error:&error];
+        //删除表内所有数据
+        [WHObject deleteAllInTable:@"student" error:&error];
+        //删除表
+        [WHObject deleteTable:@"student" error:&error];
+        
+        //删除表内所有数据
+        [WHObject deleteAllInTable:@"score" error:&error];
+        //删除表
+        [WHObject deleteTable:@"score" error:&error];
     }
     
     if (error) {
@@ -48,7 +57,7 @@
     [[WHDBManager shareManager] createTableWithTableName:@"score"
                                              forKeyTypes:@{@"name":WHDB_VALUETYPE_STRING,
                                                            @"studentId":WHDB_VALUETYPE_INTEGER,
-                                                           @"score":WHDB_VALUETYPE_INTEGER}
+                                                           @"test_score":WHDB_VALUETYPE_INTEGER}
                                                    error:&error];
     
     if (error) {
@@ -95,7 +104,7 @@
         WHObject *obj = [WHObject objectWithTableName:@"score"];
         [obj setObject:[student objectForKey:@"name"] forKey:@"name"];
         [obj setObject:[student objectForKey:@"student_id"] forKey:@"studentId"];
-        [obj setObject:[NSString stringWithFormat:@"%d", arc4random()%50 + 51] forKey:@"score"];
+        [obj setObject:@(arc4random()%50 + 51) forKey:@"test_score"];
         [scores addObject:obj];
     }
     [WHObject saveAll:scores inTable:@"student" error:&error];

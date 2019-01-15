@@ -106,6 +106,7 @@
     if (keyTypes.count) {
         [initDic addEntriesFromDictionary:keyTypes];
     }
+    
     if (self.defaultKeysEnable) {
         [sql appendString:@" (primaryId INTEGER PRIMARY KEY AUTOINCREMENT"];
         for (NSString *key in [WHObject invalidKeys]) {
@@ -116,6 +117,7 @@
             }
         }
     }
+    
     if (initDic.count) {
         NSArray *initKeys = initDic.allKeys;
         if (initDic.count == 1) {
@@ -339,7 +341,12 @@
             }
             [sql appendFormat:@"%@ VALUES %@", keysString, valuesString];
         }
-        [self.db executeUpdate:sql withArgumentsInArray:arguments];
+        success = [self.db executeUpdate:sql withArgumentsInArray:arguments];
+        if (!success) {
+            *error = [self.db lastError];
+            [self.db rollback];
+            return success;
+        }
     }
     success = [self.db commit];
     if (!success) {
@@ -398,8 +405,12 @@
                 }
             }
         }
-        [self.db executeUpdate:sql withParameterDictionary:objDic];
-        
+        success = [self.db executeUpdate:sql withParameterDictionary:objDic];
+        if (!success) {
+            *error = [self.db lastError];
+            [self.db rollback];
+            return success;
+        }
     }
     success = [self.db commit];
     if (!success) {
@@ -479,8 +490,10 @@
         NSArray *keys               = objDic.allKeys;
         NSMutableArray *arguments   = [NSMutableArray array];
         NSMutableString *sql        = [NSMutableString stringWithFormat:@"UPDATE %@ SET", tableName];
+        id primaryId                = nil;
         if (self.defaultKeysEnable) {
             [objDic setValue:[NSDate date] forKey:@"updatedAt"];
+            primaryId = [objDic objectForKey:@"primaryId"];
             [objDic removeObjectForKey:@"primaryId"];
             keys = objDic.allKeys;
         }
@@ -499,9 +512,14 @@
             }
         }
         if (self.defaultKeysEnable) {
-            [sql appendString:@" WHERE createdAt=?"];
-            [arguments addObject:[objDic objectForKey:@"createdAt"]];
-            [self.db executeUpdate:sql withArgumentsInArray:arguments];
+            [sql appendString:@" WHERE primaryId=?"];
+            [arguments addObject:primaryId];
+            success = [self.db executeUpdate:sql withArgumentsInArray:arguments];
+            if (!success) {
+                *error = [self.db lastError];
+                [self.db rollback];
+                return success;
+            }
         }else {
             for (NSInteger i = 0; i < keys.count; i++) {
                 NSString *key = keys[i];
@@ -515,7 +533,12 @@
                 }
                 [arguments addObject:[objDic objectForKey:key]];
             }
-            [self.db executeUpdate:sql withArgumentsInArray:arguments];
+            success = [self.db executeUpdate:sql withArgumentsInArray:arguments];
+            if (!success) {
+                *error = [self.db lastError];
+                [self.db rollback];
+                return success;
+            }
         }
         
     }
@@ -578,11 +601,11 @@
 
 #pragma mark - 查
 
-- (NSArray *)queryCollectionForCondition:(NSArray *)condition
-                         relateCondition:(NSArray *)relateCondition
-                               orderKeys:(NSArray *)orderKeys
-                                 inTable:(NSString *)tableName
-                             relateTable:(NSString *)relateTableName {
+- (NSArray *)queryRelationForCondition:(NSArray *)condition
+                       relateCondition:(NSArray *)relateCondition
+                             orderKeys:(NSArray *)orderKeys
+                               inTable:(NSString *)tableName
+                           relateTable:(NSString *)relateTableName {
     //SELECT EMP_ID, NAME, DEPT FROM COMPANY INNER JOIN DEPARTMENT
     //ON COMPANY.ID = DEPARTMENT.EMP_ID;
     NSMutableString *sql = [NSMutableString stringWithFormat:@"SELECT * FROM %@", tableName];
@@ -1086,12 +1109,12 @@
     
     NSMutableArray *result = [NSMutableArray array];
     FMResultSet *rs = [self.db executeQuery:sql withArgumentsInArray:arguments];
-    while ([rs next]) {
-        [result addObject:[rs resultDictionary]];
-    }
     if ([self.db lastErrorCode] != 0) {
         *error = [self.db lastError];
-        [result removeAllObjects];
+        return nil;
+    }
+    while ([rs next]) {
+        [result addObject:[rs resultDictionary]];
     }
     [self.db close];
     return result;

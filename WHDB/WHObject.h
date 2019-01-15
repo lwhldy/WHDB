@@ -57,8 +57,9 @@ typedef void(^WHBoolResultBlock)(BOOL succeeded,  NSError *error);
 @property (nonatomic, strong, readonly) NSDate *createdAt;
 /** 表名 */
 @property (nonatomic, strong, readonly) NSString *tableName;
+
 /** 所有的key数组 */
-@property (nonatomic, strong, readonly) NSArray *allKeys;
+- (NSArray*)allkeys;
 /** 预留字段 如果WHDBManager的defaultKeys为YES才生效 默认不生效*/
 + (NSArray *)invalidKeys;
 
@@ -144,14 +145,14 @@ typedef void(^WHBoolResultBlock)(BOOL succeeded,  NSError *error);
 #pragma mark - Delete
 
 /**
- 删除
+ 删除对象
 
  @return YES OR NO
  */
 - (BOOL)delete;
 
 /**
- 删除
+ 删除对象
 
  @param error 如果出错将被赋值
  @return YES OR NO
@@ -159,7 +160,7 @@ typedef void(^WHBoolResultBlock)(BOOL succeeded,  NSError *error);
 - (BOOL)delete:(NSError **)error;
 
 /**
- 保存对象数组
+ 删除对象数组
 
  @param objects WHObject 数组
  @return YES OR NO
@@ -167,13 +168,48 @@ typedef void(^WHBoolResultBlock)(BOOL succeeded,  NSError *error);
 + (BOOL)deleteAll:(NSArray<WHObject *>*)objects inTable:(NSString*)tableName;
 
 /**
- 保存对象数组
+ 删除对象数组
 
  @param objects WHObject 数组
  @param error 如果出错将被赋值
  @return YES OR NO
  */
 + (BOOL)deleteAll:(NSArray<WHObject *>*)objects inTable:(NSString*)tableName error:(NSError **)error;
+
+/**
+ 删除表内所有数据
+ 
+ @param tableName 表名
+ @return YES OR NO
+ */
++ (BOOL)deleteAllInTable:(NSString*)tableName;
+
+/**
+ 删除表内所有数据
+ 
+ @param tableName 表名
+ @param error 如果出错将被赋值
+ @return YES OR NO
+ */
++ (BOOL)deleteAllInTable:(NSString*)tableName error:(NSError **)error;
+
+
+/**
+ 删除表
+ 
+ @param tableName 表名
+ @return YES OR NO
+ */
++ (BOOL)deleteTable:(NSString*)tableName;
+
+/**
+ 删除表
+ 
+ @param tableName 表名
+ @param error 如果出错将被赋值
+ @return YES OR NO
+ */
++ (BOOL)deleteTable:(NSString*)tableName error:(NSError **)error;
 
 
 

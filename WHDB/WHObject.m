@@ -10,7 +10,6 @@
 #import "WHDBManager.h"
 
 @interface WHObject ()
-@property (nonatomic, strong, readwrite) NSArray  *allKeys;
 @property (nonatomic, strong) NSMutableDictionary *keyValues;
 
 @property (nonatomic, strong, readwrite) NSNumber *primaryId;
@@ -54,7 +53,10 @@
 #pragma setter && getter
 
 - (void)setObject:(id)object forKey:(NSString *)key {
-    if (!key || !object) {
+    if (object == nil) {
+        if (key) {
+            [self removeObjectForKey:key];
+        }
         return;
     }
     
@@ -74,14 +76,14 @@
 }
 
 - (void)removeObjectForKey:(NSString *)key {
-    if ([self.allKeys containsObject:key]) {
+    if ([[self allKeys] containsObject:key]) {
         [self.keyValues removeObjectForKey:key];
     }
 }
 
 - (id)objectForKey:(NSString *)key {
-    if ([self.allKeys containsObject:key]) {
-        [self.keyValues valueForKey:key];
+    if ([[self allKeys] containsObject:key]) {
+       return [self.keyValues valueForKey:key];
     }
     return nil;
 }
@@ -100,7 +102,7 @@
     return nil;
 }
 
-- (NSArray*)allkeys {
+- (NSArray*)allKeys {
     return self.keyValues.allKeys;
 }
 
@@ -150,6 +152,21 @@
     return [[WHDBManager shareManager] removeObjects:dictionaryArray inTable:tableName error:error];
 }
 
++ (BOOL)deleteAllInTable:(NSString *)tableName {
+    return [self deleteAllInTable:tableName error:nil];
+}
+
++ (BOOL)deleteAllInTable:(NSString *)tableName error:(NSError *__autoreleasing *)error {
+    return [[WHDBManager shareManager] removeAllRowsWithTable:tableName error:error];
+}
+
++ (BOOL)deleteTable:(NSString *)tableName {
+    return [self deleteTable:tableName error:nil];
+}
+
++ (BOOL)deleteTable:(NSString *)tableName error:(NSError *__autoreleasing *)error {
+    return [[WHDBManager shareManager] removeTable:tableName error:error];
+}
 
 #pragma Properties
 
