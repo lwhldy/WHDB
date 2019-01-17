@@ -11,8 +11,7 @@ Import <WHDB.h>.
 
 #
 # Usage
-
-//使用WHObject或WHQuery 必须初始化数据库
+    //使用WHObject或WHQuery 必须初始化数据库
     NSError *error = nil;
     
     NSString *doc = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
