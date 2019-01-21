@@ -45,7 +45,7 @@
     }
     
     //此属性默认为NO 设置为YES时 创建 表示默认加入updatedAt createdAt primaryId三个字段
-    //[WHDBManager shareManager].defaultKeysEnable = YES;
+    [WHDBManager shareManager].defaultKeysEnable = YES;
     //根据提供的表名 字段名：属性 字典来创建表
     [[WHDBManager shareManager] createTableWithTableName:@"student"
                                              forKeyTypes:@{@"student_id":WHDB_VALUETYPE_INTEGER,
@@ -78,7 +78,7 @@
     }
     [WHObject saveAll:stus inTable:@"student" error:&error];
     if (error) {
-        NSLog(@"save data error === %@", error);
+        NSLog(@"student save data error === %@", error);
         return;
     }
     
@@ -107,10 +107,40 @@
         [obj setObject:@(arc4random()%50 + 51) forKey:@"test_score"];
         [scores addObject:obj];
     }
-    [WHObject saveAll:scores inTable:@"student" error:&error];
+    [WHObject saveAll:scores inTable:@"score" error:&error];
     if (error) {
-        NSLog(@"save data error === %@", error);
+        NSLog(@"score save data error === %@", error);
         return;
+    }
+    
+    //给表添加字段
+    [WHObject addColumnWithKeyType:@{@"average":WHDB_VALUETYPE_INTEGER} inTable:@"student" error:&error];
+    if (error) {
+        NSLog(@"add column average to student error === %@", error);
+        return;
+    }
+    
+    NSMutableArray *updateArray = [NSMutableArray array];
+    for (NSInteger i = 0; i < results.count; i++) {
+        WHObject *student = results[i];
+        [student setObject:@(arc4random()%60 + 40) forKey:@"average"];
+        [updateArray addObject:student];
+    }
+    [WHObject updateAll:updateArray conditions:nil inTable:@"student" error:&error];
+    if (error) {
+        NSLog(@"update student with average error === %@", error);
+        return;
+    }
+    //查询刚刚添加的average字段
+    WHQuery *averageQuery = [WHQuery queryWithTableName:@"student"];
+    [averageQuery whereKeyNotNull:@"average"];
+    
+    results = [averageQuery findObjects:&error];
+    
+    if (error) {
+        NSLog(@"query student with average error === %@", error);
+    }else {
+        NSLog(@"query student with average succeed, results === %@", results);
     }
     
     //关联查询
@@ -118,7 +148,7 @@
     [query2 whereKey:@"age" equalTo:@(15)];
     //student表中student_id 与 score表中 studentId 相等的结果
     [query2 whereKey:@"student_id" equalToRelationalKey:@"studentId" inRelationalTable:@"score"];
-    results = [query findObjects:&error];
+    results = [query2 findObjects:&error];
     
     if (error) {
         NSLog(@"query error === %@", error);
@@ -126,6 +156,8 @@
     }else {
         NSLog(@"results == %@", results);
     }
+    
+    
     
 }
 
