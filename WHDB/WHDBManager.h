@@ -247,6 +247,7 @@ static NSString *const WHDB_VALUETYPE_NUMERIC = @"NUMERIC";
 
 
 
+
 #pragma mark - 删
 
 /**
@@ -330,7 +331,7 @@ static NSString *const WHDB_VALUETYPE_NUMERIC = @"NUMERIC";
  @param tableName 表名
  @return YES or NO
  */
-- (BOOL)updateObject:(id)object inTable:(NSString*)tableName;
+- (BOOL)updateObject:(id)object condition:(NSDictionary*)condition inTable:(NSString*)tableName;
 
 /**
  更新一行数据
@@ -340,7 +341,7 @@ static NSString *const WHDB_VALUETYPE_NUMERIC = @"NUMERIC";
  @param error 如果出错将被赋值
  @return YES or NO
  */
-- (BOOL)updateObject:(id)object inTable:(NSString*)tableName error:(NSError **)error;
+- (BOOL)updateObject:(id)object condition:(NSDictionary*)condition inTable:(NSString*)tableName error:(NSError **)error;
 
 /**
  更新多行数据
@@ -349,7 +350,7 @@ static NSString *const WHDB_VALUETYPE_NUMERIC = @"NUMERIC";
  @param tableName 表名
  @return YES or NO
  */
-- (BOOL)updateObjects:(NSArray *)objects inTable:(NSString*)tableName;
+- (BOOL)updateObjects:(NSArray *)objects conditions:(NSArray*)conditions inTable:(NSString*)tableName;
 
 /**
  更新多行数据
@@ -359,7 +360,7 @@ static NSString *const WHDB_VALUETYPE_NUMERIC = @"NUMERIC";
  @param error 如果出错将被赋值
  @return YES or NO
  */
-- (BOOL)updateObjects:(NSArray *)objects inTable:(NSString*)tableName error:(NSError **)error;
+- (BOOL)updateObjects:(NSArray *)objects conditions:(NSArray*)conditions inTable:(NSString*)tableName error:(NSError **)error;
 
 /**
  修改符合条件的行

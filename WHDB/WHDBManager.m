@@ -160,7 +160,7 @@
 }
 
 - (BOOL)updateOldTableName:(NSString *)oldTableName toNewTableName:(NSString *)newTableName error:(NSError *__autoreleasing *)error {
-    NSString *sql = [NSString stringWithFormat:@"ALERT TABLE %@ RENAME TO %@", oldTableName, newTableName];
+    NSString *sql = [NSString stringWithFormat:@"ALTER TABLE %@ RENAME TO %@", oldTableName, newTableName];
     if (![self.db open]) {
         *error = [self.db lastError];
         return NO;
@@ -198,7 +198,7 @@
         return NO;
     }
     
-    NSString *sql = [NSString stringWithFormat:@"ALERT TABLE %@ ADD COLUMN", tableName];
+    NSString *sql = [NSString stringWithFormat:@"ALTER TABLE %@ ADD COLUMN", tableName];
     if (![self.db open]) {
         *error = [self.db lastError];
         return NO;
@@ -207,17 +207,25 @@
     BOOL success = [self.db beginTransaction];
     if (!success) {
         *error = [self.db lastError];
+        [self.db close];
         return success;
     }
     for (NSString *key in keys) {
         NSString *type = [keyTypes valueForKey:key];
         NSString *subSql = [NSString stringWithFormat:@"%@ %@ %@", sql, key, type];
         success = [self.db executeUpdate:subSql];
+        if (!success) {
+            *error = [self.db lastError];
+            [self.db rollback];
+            [self.db close];
+            return success;
+        }
     }
     success = [self.db commit];
     if (!success) {
         *error = [self.db lastError];
         [self.db rollback];
+        [self.db close];
         return success;
     }
     [self.db close];
@@ -316,7 +324,6 @@
         
         if (self.defaultKeysEnable) {
             [objDic setObject:[NSNull null] forKey:@"primaryId"];
-            [objDic setObject:[NSDate date] forKey:@"updatedAt"];
         }
         NSMutableArray *arguments = [NSMutableArray array];
         if (keys.count == 1) {
@@ -460,24 +467,24 @@
 
 #pragma mark - 改
 
-- (BOOL)updateObject:(id)object inTable:(NSString *)tableName {
-    return [self updateObject:object inTable:tableName error:nil];
+- (BOOL)updateObject:(id)object condition:(NSDictionary *)condition inTable:(NSString *)tableName {
+    return [self updateObject:object condition:condition inTable:tableName error:nil];
 }
 
-- (BOOL)updateObject:(id)object inTable:(NSString *)tableName error:(NSError *__autoreleasing *)error {
-    if (!object) {
+- (BOOL)updateObject:(id)object inTable:(NSString *)tableName condition:(NSDictionary *)condition error:(NSError *__autoreleasing *)error {
+    if (!object || !condition) {
         return NO;
     }
-    return [self updateObjects:@[object] inTable:tableName error:error];
+    return [self updateObjects:@[object] conditions:@[condition] inTable:tableName error:error];
 }
 
-- (BOOL)updateObjects:(NSArray *)objects inTable:(NSString *)tableName {
+- (BOOL)updateObjects:(NSArray *)objects conditions:(NSArray *)conditions inTable:(NSString *)tableName {
     
-    return [self updateObjects:objects inTable:tableName error:nil];
+    return [self updateObjects:objects conditions:conditions inTable:tableName error:nil];
 }
 
-- (BOOL)updateObjects:(NSArray *)objects inTable:(NSString *)tableName error:(NSError *__autoreleasing *)error {
-    if (objects.count) {
+- (BOOL)updateObjects:(NSArray *)objects conditions:(NSArray *)conditions inTable:(NSString *)tableName error:(NSError *__autoreleasing *)error {
+    if (!objects.count) {
         return NO;
     }
     if (![self.db open]) {
@@ -521,17 +528,22 @@
                 return success;
             }
         }else {
-            for (NSInteger i = 0; i < keys.count; i++) {
-                NSString *key = keys[i];
-                
-                if (i == 0) {
-                    [sql appendString:[NSString stringWithFormat:@" WHERE %@=?", key]];
-                    
-                }else {
-                    [sql appendString:[NSString stringWithFormat:@" AND %@=?", key]];
-                    
+            
+            for (NSInteger i = 0; i < conditions.count; i++) {
+                NSDictionary *condition = conditions[i];
+                NSArray *conditionKeys = condition.allKeys;
+                for (NSInteger j = 0; j < conditionKeys.count; j++) {
+                    NSString *key = conditionKeys[i];
+                    if (j == 0) {
+                        [sql appendString:[NSString stringWithFormat:@" WHERE %@=?", key]];
+                        
+                    }else {
+                        [sql appendString:[NSString stringWithFormat:@" AND %@=?", key]];
+                        
+                    }
+                    [arguments addObject:[condition objectForKey:key]];
                 }
-                [arguments addObject:[objDic objectForKey:key]];
+                
             }
             success = [self.db executeUpdate:sql withArgumentsInArray:arguments];
             if (!success) {
@@ -1060,6 +1072,7 @@
                 [conditionSql appendString:[NSString stringWithFormat:@" AND %@ NOT NULL", keyStr]];
             }
         }
+        hasCondition = YES;
     }
     if (nullKeys.count) {
         for (NSInteger i = 0; i < nullKeys.count; i++) {
@@ -1071,6 +1084,7 @@
                 [conditionSql appendString:[NSString stringWithFormat:@" AND %@ IS NULL", keyStr]];
             }
         }
+        hasCondition = YES;
     }
     
     if (ascendingKeys.count) {

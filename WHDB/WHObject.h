@@ -59,7 +59,7 @@ typedef void(^WHBoolResultBlock)(BOOL succeeded,  NSError *error);
 @property (nonatomic, strong, readonly) NSString *tableName;
 
 /** 所有的key数组 */
-- (NSArray*)allkeys;
+- (NSArray*)allKeys;
 /** 预留字段 如果WHDBManager的defaultKeys为YES才生效 默认不生效*/
 + (NSArray *)invalidKeys;
 
@@ -104,17 +104,59 @@ typedef void(^WHBoolResultBlock)(BOOL succeeded,  NSError *error);
  */
 - (NSDictionary*)dictionaryForObject;
 
+
+#pragma mark - Table Methods
+
+/**
+ 为表添加字段
+
+ @param key 键名
+ @param tableName 表名
+ @return YES OR NO
+ */
++ (BOOL)addColumnWithKey:(NSString*)key inTable:(NSString*)tableName;
+
+/**
+ 为表添加字段
+ 
+ @param key 键名
+ @param tableName 表名
+ @param error 如果出错将被赋值
+ @return YES OR NO
+ */
++ (BOOL)addColumnWithKey:(NSString*)key inTable:(NSString*)tableName error:(NSError **)error;
+
+/**
+ 为表添加字段
+ 
+ @param keyType @{键:类型} 字典
+ @param tableName 表名
+ @return YES OR NO
+ */
++ (BOOL)addColumnWithKeyType:(NSDictionary*)keyType inTable:(NSString*)tableName;
+
+/**
+ 为表添加字段
+ 
+ @param keyType @{键:类型} 字典
+ @param tableName 表名
+ @param error 如果出错将被赋值
+ @return YES OR NO
+ */
++ (BOOL)addColumnWithKeyType:(NSDictionary*)keyType inTable:(NSString*)tableName error:(NSError **)error;
+
+
 #pragma mark - Save
 
 /**
- 保存/更新-如果已经存在的话
+ 保存
 
  @return YES OR NO
  */
 - (BOOL)save;
 
 /**
- 保存/更新-如果已经存在的话
+ 保存
 
  @param error 如果出错将被赋值
  @return YES OR NO
@@ -140,6 +182,55 @@ typedef void(^WHBoolResultBlock)(BOOL succeeded,  NSError *error);
  @return YES OR NO
  */
 + (BOOL)saveAll:(NSArray<WHObject *> *)objects inTable:(NSString*)tableName error:(NSError **)error;
+
+
+#pragma mark - Update
+/**
+ 更新
+ @param condition 更新条件字典
+ 如表为WHDBManager的defautKeysEnable为YES时创建的表 可不填
+ 内部方法会替你找到对应的primaryId来更新对象
+ @return YES OR NO
+ */
+- (BOOL)updateWithCondition:(NSDictionary*)condition;
+
+/**
+ 更新
+ @param condition 更新条件字典
+ 如表为WHDBManager的defautKeysEnable为YES时创建的表 可不填
+ 内部方法会替你找到对应的primaryId来更新对象
+ @param error 如果出错将被赋值
+ @return YES OR NO
+ */
+- (BOOL)updateWithCondition:(NSDictionary*)condition error:(NSError *)error;
+
+
+/**
+ 批量更新
+ 
+ @param objects WHObject数组
+ @param conditions 更新条件数组
+ 需与objects数组一一对应
+ 如表为WHDBManager的defautKeysEnable为YES时创建的表 可不填
+ 内部方法会替你找到对应的primaryId来更新对象
+ @param tableName 表名
+ @return YES OR NO
+ */
++ (BOOL)updateAll:(NSArray<WHObject *> *)objects conditions:(NSArray*)conditions inTable:(NSString*)tableName;
+
+/**
+ 批量更新
+ 
+ @param objects WHObject数组
+ @param conditions 更新条件数组
+ 需与objects数组一一对应
+ 如表为WHDBManager的defautKeysEnable为YES时创建的表 可不填
+ 内部方法会替你找到对应的primaryId来更新对象
+ @param tableName 表名
+ @param error 如果出错将被赋值
+ @return YES OR NO
+ */
++ (BOOL)updateAll:(NSArray<WHObject *> *)objects conditions:(NSArray*)conditions inTable:(NSString*)tableName error:(NSError **)error;
 
 
 #pragma mark - Delete

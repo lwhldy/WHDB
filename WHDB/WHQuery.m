@@ -307,6 +307,13 @@
         for (NSDictionary *dic in results) {
             WHObject *object = [WHObject objectWithTableName:self.tableName];
             NSMutableDictionary *keyValues = [object valueForKey:@"keyValues"];
+            if ([dic.allKeys containsObject:@"primaryId"]) {
+                [object setValue:[dic valueForKey:@"primaryId"] forKey:@"primaryId"];
+                NSDate *createdAt = [NSDate dateWithTimeIntervalSince1970:[[dic valueForKey:@"createdAt"] floatValue]];
+                NSDate *updatedAt = [NSDate dateWithTimeIntervalSince1970:[[dic valueForKey:@"createdAt"] floatValue]];
+                [object setValue:createdAt forKey:@"createdAt"];
+                [object setValue:updatedAt forKey:@"updatedAt"];
+            }
             [keyValues addEntriesFromDictionary:dic];
             [array addObject:object];
         }
@@ -375,6 +382,11 @@
         WHObject *object = [WHObject objectWithTableName:self.tableName];
         NSMutableDictionary *keyValues = [object valueForKey:@"keyValues"];
         [keyValues addEntriesFromDictionary:dic];
+        if ([keyValues.allKeys containsObject:@"primaryId"]) {
+            [object setValue:[keyValues valueForKey:@"primaryId"] forKey:@"primaryId"];
+            [object setValue:[keyValues valueForKey:@"createdAt"] forKey:@"createdAt"];
+            [object setValue:[keyValues valueForKey:@"updatedAt"] forKey:@"updatedAt"];
+        }
         return object;
     }else {
         return nil;

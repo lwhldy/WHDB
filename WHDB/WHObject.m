@@ -61,7 +61,7 @@
     }
     
     if ([WHDBManager shareManager].defaultKeysEnable && [[WHObject invalidKeys] containsObject:key]) {
-        NSException *exception = [NSException exceptionWithName:@"WHDB domain" reason:[NSString stringWithFormat:@"'%@'键被保留.", key] userInfo:nil];
+        NSException *exception = [NSException exceptionWithName:@"WHDB error" reason:[NSString stringWithFormat:@"'%@'键被保留.", key] userInfo:nil];
         [exception raise];
     }
     if (![object isKindOfClass:[NSNumber class]] &&
@@ -69,7 +69,7 @@
         ![object isKindOfClass:[NSString class]] &&
         ![object isKindOfClass:[NSDate class]] ) {
         
-        NSException *exception = [NSException exceptionWithName:@"WHDB domain" reason:[NSString stringWithFormat:@"对象不是可用的存储类型."] userInfo:nil];
+        NSException *exception = [NSException exceptionWithName:@"WHDB error" reason:[NSString stringWithFormat:@"对象不是可用的存储类型."] userInfo:nil];
         [exception raise];
     }
     [self.keyValues setObject:object forKey:key];
@@ -106,6 +106,31 @@
     return self.keyValues.allKeys;
 }
 
+#pragma mark - Table Methods
+
++ (BOOL)addColumnWithKey:(NSString *)key inTable:(NSString *)tableName {
+    return [[self class] addColumnWithKey:key inTable:tableName error:nil];
+}
+
++ (BOOL)addColumnWithKey:(NSString *)key inTable:(NSString *)tableName error:(NSError *__autoreleasing *)error {
+    if (!key) {
+        return NO;
+    }
+    return [[self class] addColumnWithKeyType:@{key:WHDB_VALUETYPE_NUMERIC} inTable:tableName error:error];
+}
+
++ (BOOL)addColumnWithKeyType:(NSDictionary *)keyType inTable:(NSString *)tableName {
+    
+    return [[self class] addColumnWithKeyType:keyType inTable:tableName error:nil];
+}
+
++ (BOOL)addColumnWithKeyType:(NSDictionary *)keyType inTable:(NSString *)tableName error:(NSError *__autoreleasing *)error {
+    if (!keyType) {
+        return NO;
+    }
+    return [[WHDBManager shareManager] addKeyType:keyType inTable:tableName error:error];
+}
+
 #pragma mark - Save
 
 - (BOOL)save {
@@ -113,21 +138,53 @@
 }
 
 - (BOOL)save:(NSError *__autoreleasing *)error {
+    if ([WHDBManager shareManager].defaultKeysEnable) {
+        [self.keyValues setValue:[NSDate date] forKey:@"updatedAt"];
+        [self.keyValues setValue:[NSDate date] forKey:@"createdAt"];
+    }
     return [[WHDBManager shareManager] insertObject:self.keyValues toTable:self.tableName error:error];
+    
 }
 
-
 + (BOOL)saveAll:(NSArray<WHObject *> *)objects inTable:(NSString *)tableName {
-    return [self saveAll:objects inTable:tableName];
+    return [[self class] saveAll:objects inTable:tableName];
 }
 
 + (BOOL)saveAll:(NSArray<WHObject *> *)objects inTable:(NSString *)tableName error:(NSError *__autoreleasing *)error {
     NSMutableArray *dictionaryArray = [NSMutableArray array];
     for (WHObject *obj in objects) {
+        if ([WHDBManager shareManager].defaultKeysEnable) {
+            [obj.keyValues setValue:[NSDate date] forKey:@"updatedAt"];
+            [obj.keyValues setValue:[NSDate date] forKey:@"createdAt"];
+        }
         [dictionaryArray addObject:[obj dictionaryForObject]];
     }
     return [[WHDBManager shareManager] insertObjects:dictionaryArray toTable:tableName error:error];
 }
+
+
+#pragma mark - update
+
+- (BOOL)updateWithCondition:(NSDictionary *)condition {
+    return [self updateWithCondition:condition error:nil];
+}
+
+- (BOOL)updateWithCondition:(NSDictionary *)condition error:(NSError *)error {
+    return [[WHDBManager shareManager] updateObject:self.keyValues condition:condition inTable:self.tableName];
+}
+
++ (BOOL)updateAll:(NSArray<WHObject *> *)objects conditions:(NSArray *)conditions inTable:(NSString *)tableName {
+    return [[self class] updateAll:objects conditions:conditions inTable:tableName error:nil];
+}
+
++ (BOOL)updateAll:(NSArray<WHObject *> *)objects conditions:(NSArray *)conditions inTable:(NSString *)tableName error:(NSError *__autoreleasing *)error {
+    NSMutableArray *dictionaryArray = [NSMutableArray array];
+    for (WHObject *obj in objects) {
+        [dictionaryArray addObject:[obj dictionaryForObject]];
+    }
+    return [[WHDBManager shareManager] updateObjects:dictionaryArray conditions:conditions inTable:tableName error:error];
+}
+
 
 #pragma mark - Delete
 
