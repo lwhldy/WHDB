@@ -471,7 +471,7 @@
     return [self updateObject:object condition:condition inTable:tableName error:nil];
 }
 
-- (BOOL)updateObject:(id)object inTable:(NSString *)tableName condition:(NSDictionary *)condition error:(NSError *__autoreleasing *)error {
+- (BOOL)updateObject:(id)object condition:(NSDictionary *)condition inTable:(NSString *)tableName error:(NSError *__autoreleasing *)error {
     if (!object || !condition) {
         return NO;
     }
