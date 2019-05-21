@@ -121,7 +121,7 @@
     if (initDic.count) {
         NSArray *initKeys = initDic.allKeys;
         if (initDic.count == 1) {
-            [sql appendString:[NSString stringWithFormat:@" (%@ %@)", initKeys.firstObject, [initKeys valueForKey:initKeys.firstObject]]];
+            [sql appendString:[NSString stringWithFormat:@" (%@ %@)", initKeys.firstObject, [initDic valueForKey:initKeys.firstObject]]];
         }else {
             for (NSInteger i = 0; i < initKeys.count; i++) {
                 NSString *initKey = initKeys[i];
