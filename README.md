@@ -40,11 +40,11 @@ Import <WHDB.h>.
         return;
     }
 ```
-####此属性默认为NO 设置为YES时 创建 表示默认加入updatedAt createdAt primaryId三个字段
+#### 此属性默认为NO 设置为YES时 创建 表示默认加入updatedAt createdAt primaryId三个字段
 ```
     [WHDBManager shareManager].defaultKeysEnable = YES;
 ```
-####根据提供的表名 字段名：属性 字典来创建表
+#### 根据提供的表名 字段名：属性 字典来创建表
 ```
     [[WHDBManager shareManager] createTableWithTableName:@"student"
                                              forKeyTypes:@{@"student_id":WHDB_VALUETYPE_INTEGER,
