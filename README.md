@@ -13,8 +13,8 @@ Import <WHDB.h>.
 #
 # Usage
 
+```
     //使用WHObject或WHQuery 必须初始化数据库
-    ```
     NSError *error = nil;
     NSString *doc = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
     NSString *path = [doc stringByAppendingPathComponent:@"Test.sqlite"];
@@ -39,13 +39,13 @@ Import <WHDB.h>.
         NSLog(@"CreateBD error === %@", error);
         return;
     }
-    ```
+```
 ####此属性默认为NO 设置为YES时 创建 表示默认加入updatedAt createdAt primaryId三个字段
-    ```
+```
     [WHDBManager shareManager].defaultKeysEnable = YES;
-    ```
+```
 ####根据提供的表名 字段名：属性 字典来创建表
-    ```
+```
     [[WHDBManager shareManager] createTableWithTableName:@"student"
                                              forKeyTypes:@{@"student_id":WHDB_VALUETYPE_INTEGER,
                                                            @"name":WHDB_VALUETYPE_STRING,
@@ -63,9 +63,9 @@ Import <WHDB.h>.
         NSLog(@"Create table error === %@", error);
         return;
     }
-    ```
+```
  
-    ```
+```
     //写入student
     NSMutableArray *stus = [NSMutableArray array];
     for (NSInteger i = 0; i < 1000; i++) {
@@ -158,4 +158,4 @@ Import <WHDB.h>.
         NSLog(@"results == %@", results);
     }
     
-    ```
+```
