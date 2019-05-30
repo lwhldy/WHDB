@@ -327,6 +327,7 @@
         }
         NSMutableArray *arguments = [NSMutableArray array];
         if (keys.count == 1) {
+            [arguments addObject:objDic.allValues.firstObject];
             [sql appendString:[NSString stringWithFormat:@" (%@) VALUES (?)", keys.firstObject]];
         }else {
             NSMutableString *keysString = [NSMutableString string];
