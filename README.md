@@ -4,7 +4,7 @@
 # Installation
 
 ```
-pod 'WHDB', '~> 0.0.4'
+pod 'WHDB', '~> 0.0.5'
 ```
 Run pod install or pod update.
 ```
