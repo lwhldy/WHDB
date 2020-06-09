@@ -38,55 +38,57 @@
 
 #pragma mark - create database file
 
-- (BOOL)createExistingDBConnectionAndHoldWithPath:(NSString *)path {
+- (BOOL)createExistingDBConnectionAndHoldWithPath:(NSString * _Nonnull)path {
     return [self createExistingDBConnectionAndHoldWithPath:path error:nil];
 }
 
 
-- (BOOL)createExistingDBConnectionAndHoldWithPath:(NSString *)path error:(NSError *__autoreleasing *)error {
+- (BOOL)createExistingDBConnectionAndHoldWithPath:(NSString *_Nonnull)path error:(NSError * _Nullable __autoreleasing *)error {
     
     return [self createDBFileAndHoldWithPath:path error:error];
 }
 
-- (BOOL)createDBFileAndHoldWithDBName:(NSString *)databaseName {
+- (BOOL)createDBFileAndHoldWithDBName:(NSString * _Nonnull)databaseName {
     return [self createDBFileAndHoldWithDBName:databaseName error:nil];
 }
 
-- (BOOL)createDBFileAndHoldWithDBName:(NSString *)databaseName error:(NSError *__autoreleasing *)error {
+- (BOOL)createDBFileAndHoldWithDBName:(NSString * _Nonnull)databaseName error:(NSError * _Nullable __autoreleasing *)error {
     NSString *doc = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
     NSString *path = [doc stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.sqlite", databaseName]];
     return [self createDBFileAndHoldWithPath:path error:error];
 }
 
 
-- (BOOL)createDBFileAndHoldWithPath:(NSString *)path error:(NSError *__autoreleasing *)error {
+- (BOOL)createDBFileAndHoldWithPath:(NSString * _Nonnull)path error:(NSError * _Nullable __autoreleasing *)error {
     self.db = [[FMDatabase alloc] initWithPath:path];
     if ([self.db open]) {
         [self.db close];
         return YES;
     }else {
-        *error = [self.db lastError];
+        if (error) {
+            *error = [self.db lastError];
+        }
         return NO;
     }
 }
 
-- (BOOL)switchDBFileAndHoldWithPath:(NSString *)path {
+- (BOOL)switchDBFileAndHoldWithPath:(NSString * _Nonnull)path {
     return [self switchDBFileAndHoldWithPath:path error:nil];
 }
 
-- (BOOL)switchDBFileAndHoldWithPath:(NSString *)path error:(NSError *__autoreleasing *)error {
+- (BOOL)switchDBFileAndHoldWithPath:(NSString * _Nonnull)path error:(NSError * _Nullable __autoreleasing *)error {
     self.db = nil;
     return [self createDBFileAndHoldWithPath:path error:error];
 }
 
 #pragma mark - create Table
 
-- (BOOL)createTableWithTableName:(NSString *)tableName forKeys:(NSArray *)keys {
+- (BOOL)createTableWithTableName:(NSString *_Nonnull)tableName forKeys:(NSArray * _Nullable)keys {
     
     return [self createTableWithTableName:tableName forKeys:keys error:nil];
 }
 
-- (BOOL)createTableWithTableName:(NSString *)tableName forKeys:(NSArray *)keys error:(NSError *__autoreleasing *)error {
+- (BOOL)createTableWithTableName:(NSString * _Nonnull)tableName forKeys:(NSArray * _Nullable)keys error:(NSError * _Nullable __autoreleasing *)error {
     NSMutableDictionary *initDic = [NSMutableDictionary dictionary];
     if (keys.count) {
         for (NSString *key in keys) {
@@ -96,11 +98,11 @@
     return [self createTableWithTableName:tableName forKeyTypes:initDic error:error];
 }
 
-- (BOOL)createTableWithTableName:(NSString *)tableName forKeyTypes:(NSDictionary *)keyTypes {
+- (BOOL)createTableWithTableName:(NSString * _Nonnull)tableName forKeyTypes:(NSDictionary * _Nullable)keyTypes {
     return [self createTableWithTableName:tableName forKeyTypes:keyTypes error:nil];
 }
 
-- (BOOL)createTableWithTableName:(NSString *)tableName forKeyTypes:(NSDictionary *)keyTypes error:(NSError *__autoreleasing *)error{
+- (BOOL)createTableWithTableName:(NSString * _Nonnull)tableName forKeyTypes:(NSDictionary * _Nullable)keyTypes error:(NSError * _Nullable __autoreleasing *)error{
     NSMutableString *sql = [NSMutableString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@", tableName];
     NSMutableDictionary *initDic = [NSMutableDictionary dictionary];
     if (keyTypes.count) {
@@ -121,7 +123,7 @@
     if (initDic.count) {
         NSArray *initKeys = initDic.allKeys;
         if (initDic.count == 1) {
-            [sql appendString:[NSString stringWithFormat:@" (%@ %@)", initKeys.firstObject, [initDic valueForKey:initKeys.firstObject]]];
+            [sql appendString:[NSString stringWithFormat:@" (%@ %@)", initKeys.firstObject, [initKeys valueForKey:initKeys.firstObject]]];
         }else {
             for (NSInteger i = 0; i < initKeys.count; i++) {
                 NSString *initKey = initKeys[i];
@@ -144,41 +146,49 @@
     
     
     if (![self.db open]) {
-        *error = [self.db lastError];
+        if (error) {
+            *error = [self.db lastError];
+        }
         return NO;
     }
     BOOL success = [self.db executeUpdate:sql];
     if (!success) {
-        *error = [self.db lastError];
+        if (error) {
+            *error = [self.db lastError];
+        }
     }
     [self.db close];
     return success;
 }
 
-- (BOOL)updateOldTableName:(NSString *)oldTableName toNewTableName:(NSString *)newTableName {
+- (BOOL)updateOldTableName:(NSString *_Nonnull)oldTableName toNewTableName:(NSString * _Nonnull)newTableName {
     return [self updateOldTableName:oldTableName toNewTableName:newTableName error:nil];
 }
 
-- (BOOL)updateOldTableName:(NSString *)oldTableName toNewTableName:(NSString *)newTableName error:(NSError *__autoreleasing *)error {
+- (BOOL)updateOldTableName:(NSString *_Nonnull)oldTableName toNewTableName:(NSString * _Nonnull)newTableName error:(NSError * _Nullable __autoreleasing *)error {
     NSString *sql = [NSString stringWithFormat:@"ALTER TABLE %@ RENAME TO %@", oldTableName, newTableName];
     if (![self.db open]) {
-        *error = [self.db lastError];
+        if (error) {
+            *error = [self.db lastError];
+        }
         return NO;
     }
     BOOL success = [self.db executeUpdate:sql];
     if (!success) {
-        *error = [self.db lastError];
+        if (error) {
+            *error = [self.db lastError];
+        }
     }
     [self.db close];
     return success;
 }
 
-- (BOOL)addKey:(NSString *)key inTable:(NSString *)tableName {
+- (BOOL)addKey:(NSString *)key inTable:(NSString *)tableName{
     
     return [self addKey:key inTable:tableName error:nil];
 }
 
-- (BOOL)addKey:(NSString *)key inTable:(NSString *)tableName error:(NSError *__autoreleasing *)error {
+- (BOOL)addKey:(NSString *)key inTable:(NSString *)tableName error:(NSError * _Nullable __autoreleasing *)error {
     if (!key || !tableName) {
         return NO;
     }
@@ -193,20 +203,24 @@
     return [self addKeyType:keyTypes inTable:tableName error:nil];
 }
 
-- (BOOL)addKeyType:(NSDictionary *)keyTypes inTable:(NSString *)tableName error:(NSError *__autoreleasing *)error {
+- (BOOL)addKeyType:(NSDictionary *)keyTypes inTable:(NSString *)tableName error:(NSError * _Nullable __autoreleasing *)error {
     if (!keyTypes.count || !tableName) {
         return NO;
     }
     
     NSString *sql = [NSString stringWithFormat:@"ALTER TABLE %@ ADD COLUMN", tableName];
     if (![self.db open]) {
-        *error = [self.db lastError];
+        if (error) {
+            *error = [self.db lastError];
+        }
         return NO;
     }
     NSArray *keys = keyTypes.allKeys;
     BOOL success = [self.db beginTransaction];
     if (!success) {
-        *error = [self.db lastError];
+        if (error) {
+            *error = [self.db lastError];
+        }
         [self.db close];
         return success;
     }
@@ -215,7 +229,9 @@
         NSString *subSql = [NSString stringWithFormat:@"%@ %@ %@", sql, key, type];
         success = [self.db executeUpdate:subSql];
         if (!success) {
-            *error = [self.db lastError];
+            if (error) {
+                *error = [self.db lastError];
+            }
             [self.db rollback];
             [self.db close];
             return success;
@@ -223,7 +239,9 @@
     }
     success = [self.db commit];
     if (!success) {
-        *error = [self.db lastError];
+        if (error) {
+            *error = [self.db lastError];
+        }
         [self.db rollback];
         [self.db close];
         return success;
@@ -292,7 +310,7 @@
     return [self insertObject:object toTable:tableName error:nil];
 }
 
-- (BOOL)insertObject:(id)object toTable:(NSString *)tableName error:(NSError *__autoreleasing *)error {
+- (BOOL)insertObject:(id)object toTable:(NSString *)tableName error:(NSError * _Nullable __autoreleasing *)error {
     if (!object) {
         return NO;
     }
@@ -303,13 +321,15 @@
     return [self insertObjects:objects toTable:tableName error:nil];
 }
 
-- (BOOL)insertObjects:(NSArray *)objects toTable:(NSString *)tableName error:(NSError *__autoreleasing *)error {
+- (BOOL)insertObjects:(NSArray *)objects toTable:(NSString *)tableName error:(NSError * _Nullable __autoreleasing *)error {
     if (!objects.count) {
         return NO;
     }
     
     if (![self.db open]) {
-        *error = [self.db lastError];
+        if (error) {
+            *error = [self.db lastError];
+        }
         return NO;
     }
     BOOL success = [self.db beginTransaction];
@@ -351,14 +371,18 @@
         }
         success = [self.db executeUpdate:sql withArgumentsInArray:arguments];
         if (!success) {
-            *error = [self.db lastError];
+            if (error) {
+                *error = [self.db lastError];
+            }
             [self.db rollback];
             return success;
         }
     }
     success = [self.db commit];
     if (!success) {
-        *error = [self.db lastError];
+        if (error) {
+            *error = [self.db lastError];
+        }
         [self.db rollback];
     }
     [self.db close];
@@ -371,7 +395,7 @@
     return [self removeObject:object inTable:tableName error:nil];
 }
 
-- (BOOL)removeObject:(id)object inTable:(NSString *)tableName error:(NSError *__autoreleasing *)error {
+- (BOOL)removeObject:(id)object inTable:(NSString *)tableName error:(NSError * _Nullable __autoreleasing *)error {
     if (!object) {
         return NO;
     }
@@ -382,14 +406,16 @@
     return [self removeObjects:objects inTable:tableName error:nil];
 }
 
-- (BOOL)removeObjects:(NSArray *)objects inTable:(NSString *)tableName error:(NSError *__autoreleasing *)error {
+- (BOOL)removeObjects:(NSArray *)objects inTable:(NSString *)tableName error:(NSError * _Nullable __autoreleasing *)error {
     
     if (!objects.count) {
         return NO;
     }
     
     if (![self.db open]) {
-        *error = [self.db lastError];
+        if (error) {
+            *error = [self.db lastError];
+        }
         return NO;
     }
     BOOL success = [self.db beginTransaction];
@@ -415,14 +441,18 @@
         }
         success = [self.db executeUpdate:sql withParameterDictionary:objDic];
         if (!success) {
-            *error = [self.db lastError];
+            if (error) {
+                *error = [self.db lastError];
+            }
             [self.db rollback];
             return success;
         }
     }
     success = [self.db commit];
     if (!success) {
-        *error = [self.db lastError];
+        if (error) {
+            *error = [self.db lastError];
+        }
         [self.db rollback];
     }
     [self.db close];
@@ -433,7 +463,7 @@
     return [self removeAllRowsWithTable:tableName error:nil];
 }
 
-- (BOOL)removeAllRowsWithTable:(NSString *)tableName error:(NSError *__autoreleasing *)error {
+- (BOOL)removeAllRowsWithTable:(NSString *)tableName error:(NSError * _Nullable __autoreleasing *)error {
     if (![self.db open]) {
         return NO;
     }
@@ -441,17 +471,19 @@
     
     BOOL success = [self.db executeUpdate:sql];
     if (!success) {
-        *error = [self.db lastError];
+        if (error) {
+            *error = [self.db lastError];
+        }
     }
     [self.db close];
     return success;
 }
 
-- (BOOL)removeTable:(NSString *)tableName {
+- (BOOL)removeTable:(NSString * _Nullable)tableName {
     return [self removeTable:tableName error:nil];
 }
 
-- (BOOL)removeTable:(NSString *)tableName error:(NSError *__autoreleasing *)error {
+- (BOOL)removeTable:(NSString * _Nullable)tableName error:(NSError * _Nullable __autoreleasing * _Nullable)error {
     if (![self.db open]) {
         return NO;
     }
@@ -459,7 +491,9 @@
     
     BOOL success = [self.db executeUpdate:sql];
     if (!success) {
-        *error = [self.db lastError];
+        if (error) {
+            *error = [self.db lastError];
+        }
     }
     [self.db close];
     return success;
@@ -472,7 +506,7 @@
     return [self updateObject:object condition:condition inTable:tableName error:nil];
 }
 
-- (BOOL)updateObject:(id)object condition:(NSDictionary *)condition inTable:(NSString *)tableName error:(NSError *__autoreleasing *)error {
+- (BOOL)updateObject:(id)object condition:(NSDictionary *)condition inTable:(NSString *)tableName error:(NSError * _Nullable __autoreleasing *)error {
     if (!object || !condition) {
         return NO;
     }
@@ -484,12 +518,14 @@
     return [self updateObjects:objects conditions:conditions inTable:tableName error:nil];
 }
 
-- (BOOL)updateObjects:(NSArray *)objects conditions:(NSArray *)conditions inTable:(NSString *)tableName error:(NSError *__autoreleasing *)error {
+- (BOOL)updateObjects:(NSArray *)objects conditions:(NSArray *)conditions inTable:(NSString *)tableName error:(NSError * _Nullable __autoreleasing *)error {
     if (!objects.count) {
         return NO;
     }
     if (![self.db open]) {
-        *error = [self.db lastError];
+        if (error) {
+            *error = [self.db lastError];
+        }
         return NO;
     }
     BOOL success = [self.db beginTransaction];
@@ -524,7 +560,9 @@
             [arguments addObject:primaryId];
             success = [self.db executeUpdate:sql withArgumentsInArray:arguments];
             if (!success) {
-                *error = [self.db lastError];
+                if (error) {
+                    *error = [self.db lastError];
+                }
                 [self.db rollback];
                 return success;
             }
@@ -548,7 +586,9 @@
             }
             success = [self.db executeUpdate:sql withArgumentsInArray:arguments];
             if (!success) {
-                *error = [self.db lastError];
+                if (error) {
+                    *error = [self.db lastError];
+                }
                 [self.db rollback];
                 return success;
             }
@@ -558,7 +598,9 @@
     
     success = [self.db commit];
     if (!success) {
-        *error = [self.db lastError];
+        if (error) {
+            *error = [self.db lastError];
+        }
         [self.db rollback];
     }
     return success;
@@ -872,7 +914,7 @@
                          limit:(NSInteger)limit
                        isCount:(BOOL)isCount
                        inTable:(NSString *)tableName
-                         error:(NSError **)error {
+                         error:(NSError * _Nullable *)error {
     self.queryTableName = tableName;
     NSString *replaceStr = isCount ? @"COUNT(*)" : @"*";
     if (isCount) {
@@ -881,7 +923,9 @@
     NSMutableString *sql = [NSMutableString stringWithFormat:@"SELECT %@ FROM %@", replaceStr,  tableName];
     NSMutableArray *arguments = [NSMutableArray array];
     if (![self.db open]) {
-        *error = [self.db lastError];
+        if (error) {
+            *error = [self.db lastError];
+        }
         return nil;
     }
     //关联查询
@@ -1125,7 +1169,9 @@
     NSMutableArray *result = [NSMutableArray array];
     FMResultSet *rs = [self.db executeQuery:sql withArgumentsInArray:arguments];
     if ([self.db lastErrorCode] != 0) {
-        *error = [self.db lastError];
+        if (error) {
+            *error = [self.db lastError];
+        }
         return nil;
     }
     while ([rs next]) {
